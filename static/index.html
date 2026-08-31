@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>墨记 · 开放 Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css?v=1.3.6" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <h1 class="brand-name">墨记</h1>
+      <span class="brand-tag">开放 Blog</span>
+    </div>
+    <nav class="nav">
+      <a class="btn btn-ghost" id="linkEditor" href="/login.html">作者入口</a>
+    </nav>
+  </header>
+  <main class="wrap layout-with-tree">
+    <aside class="cat-panel">
+      <div class="cat-panel-title">目录</div>
+      <nav class="cat-tree" id="catTree" aria-label="目录分类"></nav>
+    </aside>
+    <div class="content-col">
+      <section class="filters">
+        <input type="search" id="searchInput" class="filter-input" placeholder="搜索标题或正文…" autocomplete="off" />
+        <select id="tagFilter" class="filter-select" title="按标签筛选">
+          <option value="">全部标签</option>
+        </select>
+      </section>
+      <ul class="post-list" id="postList"></ul>
+      <div class="empty" id="empty" hidden>暂无文章</div>
+    </div>
+  </main>
+
+  <!-- 页内浮动多标签阅读器 -->
+  <div class="float-reader" id="floatReader" hidden aria-hidden="true">
+    <div class="float-reader-backdrop" id="floatBackdrop" title="点击关闭"></div>
+    <div class="float-reader-panel" role="dialog" aria-modal="true" aria-label="文章阅读">
+      <div class="float-reader-titlebar">
+        <div class="float-tabs" id="floatTabs" role="tablist"></div>
+        <div class="float-reader-actions">
+          <a class="btn btn-ghost" id="btnFloatEdit" hidden href="#">编辑</a>
+          <button type="button" class="btn btn-ghost" id="btnFloatCloseAll" title="关闭全部">全部关闭</button>
+          <button type="button" class="btn btn-ghost" id="btnFloatMinimize" title="收起">收起</button>
+        </div>
+      </div>
+      <div class="float-reader-body" id="floatBody"></div>
+    </div>
+  </div>
+
+  <script src="/static/common.js?v=1.3.6"></script>
+  <script src="/static/index.js?v=1.3.6"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作台 · 墨记</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css?v=1.3.6" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body>
+  <div class="editor-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-name">墨记工作台</span>
+      </div>
+      <div class="side-actions">
+        <button type="button" class="btn" id="btnNew">新建</button>
+        <a class="btn" href="/">站点</a>
+        <button type="button" class="btn" id="btnLogout">退出</button>
+      </div>
+      <div class="side-filters">
+        <input type="search" id="searchInput" class="side-search" placeholder="搜索…" autocomplete="off" />
+        <select id="tagFilter" class="side-search" title="标签">
+          <option value="">全部标签</option>
+        </select>
+        <select id="categoryFilter" class="side-search" title="目录">
+          <option value="">全部目录</option>
+        </select>
+      </div>
+      <ul class="side-list" id="postList"></ul>
+    </aside>
+    <main class="editor-main">
+      <header class="toolbar">
+        <input type="text" id="titleInput" class="title-input" placeholder="文章标题" maxlength="200" />
+        <input type="text" id="categoryInput" class="tags-input" placeholder="目录：如 数仓/ODS" maxlength="120" title="相对 doc/ 的子目录，空=根目录" />
+        <input type="text" id="tagsInput" class="tags-input" placeholder="标签：逗号分隔" maxlength="200" title="多个标签用逗号分隔" />
+        <button type="button" class="btn btn-primary" id="btnSave">保存</button>
+        <button type="button" class="btn btn-danger" id="btnDelete">删除</button>
+      </header>
+      <div class="editor-pane">
+        <section class="panel">
+          <span class="panel-label">Markdown</span>
+          <textarea id="editor" class="editor" spellcheck="false" placeholder="开始书写…"></textarea>
+        </section>
+        <section class="panel">
+          <span class="panel-label">预览</span>
+          <article id="preview" class="preview markdown-body"></article>
+        </section>
+      </div>
+      <div class="status-bar">
+        <span id="wordCount">0 字</span>
+        <span id="saveStatus">未保存</span>
+      </div>
+    </main>
+  </div>
+  <script src="/static/common.js?v=1.3.6"></script>
+  <script src="/static/editor.js?v=1.3.6"></script>
+</body>
+</html>

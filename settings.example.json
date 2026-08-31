@@ -1,0 +1,8 @@
+{
+  "secret_key": "dev-only-change-me",
+  "admin_user": "admin",
+  "admin_password": "admin123",
+  "posts_dir": "../doc",
+  "session_https_only": false,
+  "max_content_bytes": 2097152
+}
