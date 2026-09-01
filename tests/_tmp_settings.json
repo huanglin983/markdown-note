@@ -2,6 +2,6 @@
   "secret_key": "test-secret-key",
   "admin_user": "admin",
   "admin_password": "secret",
-  "posts_dir": "C:\\Users\\itoutsource.cz2190\\AppData\\Local\\Temp\\pytest-of-itoutsource.cz2190\\pytest-12\\test_media_relative_assets0\\posts",
+  "posts_dir": "C:\\Users\\itoutsource.cz2190\\AppData\\Local\\Temp\\pytest-of-itoutsource.cz2190\\pytest-13\\test_edit_entry_pages_served0\\posts",
   "session_https_only": false
 }
