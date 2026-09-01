@@ -1,10 +1,13 @@
 /* 墨记 Blog · 护眼淡绿主题
  * 用途：站点全局样式；分层：前端展示
- * 维护：v1.3.5 起由 IE 暗黑改为淡绿护眼
+ * 维护：v1.3.5 起由 IE 暗黑改为淡绿护眼；v1.3.7 增加白天/暗夜切换；v1.3.8 太阳/月亮图标
  */
 :root {
   --bg: #eaf3e6;
   --bg-accent: #dcead6;
+  --bg-top: #f2f8ef;
+  --bg-bottom: #e3eedd;
+  --bg-glow: rgba(255, 255, 255, 0.55);
   --surface: #f4faf1;
   --surface-raised: #e3efdd;
   --ink: #2c3a2f;
@@ -14,6 +17,7 @@
   --brand: #5b8f6b;
   --brand-hover: #4e7f5d;
   --brand-soft: #d5e8d9;
+  --brand-name-hover: #f0faf2;
   --link: #3d7a52;
   --link-hover: #2f6141;
   --danger: #b54a3c;
@@ -29,11 +33,78 @@
   --titlebar-start: #6a9b78;
   --titlebar-end: #5b8f6b;
   --on-brand: #ffffff;
+  --btn-start: #ffffff;
+  --btn-end: #eef6ea;
+  --btn-hover-start: #f7fcf5;
+  --btn-hover-end: #e4f0df;
+  --btn-primary-start: #6fa97e;
+  --btn-primary-hover-start: #7db58b;
+  --btn-primary-hover-end: #649972;
+  --btn-danger-start: #fff8f7;
+  --btn-danger-end: #f5e4e1;
+  --btn-inset: rgba(255, 255, 255, 0.7);
+  --editor-bg: #f7fbf5;
+  --draft-bg: #f3ead4;
+  --draft-ink: #7a6540;
+  --draft-border: #d9c89a;
+  --overlay: rgba(45, 70, 50, 0.35);
+  --panel-shadow: 0 8px 32px rgba(45, 70, 50, 0.22);
   --serif: "Segoe UI", "Noto Sans SC", Tahoma, sans-serif;
   --sans: "Segoe UI", "Noto Sans SC", Tahoma, sans-serif;
   --mono: Consolas, "IBM Plex Mono", "Courier New", monospace;
   --layout-max: 1100px;
   --layout-gutter: 20px;
+}
+
+/* 暗夜模式：低对比护眼深色，便于夜间阅读 */
+html[data-theme="night"] {
+  color-scheme: dark;
+  --bg: #1a1f1c;
+  --bg-accent: #222824;
+  --bg-top: #161a18;
+  --bg-bottom: #121614;
+  --bg-glow: rgba(100, 140, 110, 0.08);
+  --surface: #232a26;
+  --surface-raised: #2c3530;
+  --ink: #d5e0d4;
+  --muted: #8a9a8e;
+  --line: #3a453c;
+  --line-light: #4a564c;
+  --brand: #6fa97e;
+  --brand-hover: #7db58b;
+  --brand-soft: #2a3d30;
+  --brand-name-hover: #c8e0cc;
+  --link: #8fbf9a;
+  --link-hover: #a8d4b2;
+  --danger: #e07060;
+  --danger-border: #8a5048;
+  --card: #1e2521;
+  --input-bg: #171c19;
+  --code-bg: #2a332e;
+  --code-ink: #a8c9a0;
+  --pre-bg: #121614;
+  --pre-ink: #d5e0d4;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --win-border: #3a453c;
+  --titlebar-start: #3d5c46;
+  --titlebar-end: #334d3b;
+  --on-brand: #e8f0e4;
+  --btn-start: #2c3530;
+  --btn-end: #232a26;
+  --btn-hover-start: #35403a;
+  --btn-hover-end: #2c3530;
+  --btn-primary-start: #5a9068;
+  --btn-primary-hover-start: #6fa97e;
+  --btn-primary-hover-end: #5b8f6b;
+  --btn-danger-start: #3a2a28;
+  --btn-danger-end: #2e2220;
+  --btn-inset: rgba(255, 255, 255, 0.06);
+  --editor-bg: #171c19;
+  --draft-bg: #3a3428;
+  --draft-ink: #d4c090;
+  --draft-border: #5a5040;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; }
@@ -49,8 +120,8 @@ body {
   font-size: 13px;
   color: var(--ink);
   background:
-    radial-gradient(ellipse at top, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
-    linear-gradient(180deg, #f2f8ef 0%, var(--bg) 40%, #e3eedd 100%);
+    radial-gradient(ellipse at top, var(--bg-glow) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg) 40%, var(--bg-bottom) 100%);
   min-height: 100vh;
 }
 
@@ -95,7 +166,7 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
   letter-spacing: 0;
 }
 a.brand-name { color: var(--on-brand); text-decoration: none; }
-a.brand-name:hover { color: #f0faf2; text-decoration: none; }
+a.brand-name:hover { color: var(--brand-name-hover); text-decoration: none; }
 .brand-tag {
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.85rem;
@@ -105,15 +176,15 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
   appearance: none;
   border: 1px solid var(--win-border);
   border-radius: 2px;
-  background: linear-gradient(180deg, #ffffff 0%, #eef6ea 100%);
+  background: linear-gradient(180deg, var(--btn-start) 0%, var(--btn-end) 100%);
   color: var(--ink);
   padding: 5px 14px;
   font: inherit;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 0 var(--btn-inset);
 }
 .btn:hover {
-  background: linear-gradient(180deg, #f7fcf5 0%, #e4f0df 100%);
+  background: linear-gradient(180deg, var(--btn-hover-start) 0%, var(--btn-hover-end) 100%);
   border-color: var(--brand);
 }
 .btn:active {
@@ -121,18 +192,37 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
   box-shadow: inset 0 1px 2px rgba(60, 90, 60, 0.15);
 }
 .btn-primary {
-  background: linear-gradient(180deg, #6fa97e 0%, var(--brand) 100%);
+  background: linear-gradient(180deg, var(--btn-primary-start) 0%, var(--brand) 100%);
   border-color: var(--brand-hover);
   color: var(--on-brand);
 }
 .btn-primary:hover {
-  background: linear-gradient(180deg, #7db58b 0%, #649972 100%);
+  background: linear-gradient(180deg, var(--btn-primary-hover-start) 0%, var(--btn-primary-hover-end) 100%);
 }
 .btn-danger {
   color: var(--danger);
   border-color: var(--danger-border);
-  background: linear-gradient(180deg, #fff8f7 0%, #f5e4e1 100%);
+  background: linear-gradient(180deg, var(--btn-danger-start) 0%, var(--btn-danger-end) 100%);
 }
+.btn-theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  min-width: 32px;
+  height: 28px;
+  padding: 0;
+}
+.btn-theme .theme-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex-shrink: 0;
+}
+/* 白天显示月亮（点此切夜间）；暗夜显示太阳（点此切白天） */
+.btn-theme .theme-icon-sun { display: none; }
+html[data-theme="night"] .btn-theme .theme-icon-moon { display: none; }
+html[data-theme="night"] .btn-theme .theme-icon-sun { display: block; }
 .btn-ghost {
   background: rgba(255, 255, 255, 0.18);
   border-color: rgba(255, 255, 255, 0.45);
@@ -300,9 +390,9 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
   border: 1px solid var(--line);
 }
 .badge-draft {
-  background: #f3ead4;
-  color: #7a6540;
-  border-color: #d9c89a;
+  background: var(--draft-bg);
+  color: var(--draft-ink);
+  border-color: var(--draft-border);
 }
 
 .empty {
@@ -607,7 +697,7 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
   font-size: 13px;
   line-height: 1.55;
   outline: none;
-  background: #f7fbf5;
+  background: var(--editor-bg);
   color: var(--ink);
 }
 .preview {
@@ -640,7 +730,7 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
 .float-reader-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(45, 70, 50, 0.35);
+  background: var(--overlay);
   pointer-events: auto;
 }
 .float-reader-panel {
@@ -656,7 +746,7 @@ a.brand-name:hover { color: #f0faf2; text-decoration: none; }
   background: var(--bg);
   border: 1px solid var(--win-border);
   border-radius: 2px;
-  box-shadow: 0 8px 32px rgba(45, 70, 50, 0.22);
+  box-shadow: var(--panel-shadow);
   overflow: hidden;
 }
 .float-reader-titlebar {

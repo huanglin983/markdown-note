@@ -1,9 +1,58 @@
 /* 用途：前端公共 API 与工具；分层：接入层前端
  * 维护：v1.3 起支持按文章目录改写相对媒体路径 → /media/...
  *       v1.3.6 修复 marked 已 percent-encode 中文路径后再次 encode 导致双重编码 404
+ *       v1.3.7 白天/暗夜主题切换（localStorage: moji-theme）
+ *       v1.3.8 主题开关改为太阳/月亮图标
  */
 (() => {
   "use strict";
+
+  const THEME_KEY = "moji-theme";
+
+  function getTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY) === "night" ? "night" : "day";
+    } catch {
+      return "day";
+    }
+  }
+
+  function syncThemeToggles(theme) {
+    const title = theme === "night" ? "切换为白天模式" : "切换为暗夜模式";
+    document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+      btn.setAttribute("title", title);
+      btn.setAttribute("aria-label", title);
+      btn.setAttribute("aria-pressed", theme === "night" ? "true" : "false");
+    });
+  }
+
+  function applyTheme(theme) {
+    const next = theme === "night" ? "night" : "day";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* ignore quota / private mode */
+    }
+    syncThemeToggles(next);
+    return next;
+  }
+
+  function toggleTheme() {
+    return applyTheme(getTheme() === "night" ? "day" : "night");
+  }
+
+  function initTheme() {
+    applyTheme(getTheme());
+    document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+      if (btn.dataset.themeBound) return;
+      btn.dataset.themeBound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleTheme();
+      });
+    });
+  }
 
   async function api(path, options = {}) {
     const res = await fetch(path, {
@@ -108,5 +157,15 @@
     renderMarkdown,
     joinMediaPath,
     rewriteMediaUrls,
+    getTheme,
+    applyTheme,
+    toggleTheme,
+    initTheme,
   };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTheme);
+  } else {
+    initTheme();
+  }
 })();
