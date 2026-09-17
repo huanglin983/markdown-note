@@ -14,9 +14,16 @@ import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
-from config import MAX_CONTENT_BYTES, POSTS_DIR
+from config import MAX_CONTENT_BYTES, get_posts_dir
 
 _lock = threading.Lock()
+
+# 测试可 monkeypatch 为 Path；生产保持 None，每次走 get_posts_dir()
+POSTS_DIR: Path | None = None
+
+
+def posts_root() -> Path:
+    return POSTS_DIR if POSTS_DIR is not None else get_posts_dir()
 
 
 def now_ms() -> int:
@@ -24,7 +31,7 @@ def now_ms() -> int:
 
 
 def ensure_posts_dir() -> None:
-    POSTS_DIR.mkdir(parents=True, exist_ok=True)
+    posts_root().mkdir(parents=True, exist_ok=True)
 
 
 def sanitize_filename(title: str) -> str:
@@ -95,7 +102,7 @@ def dump_frontmatter(meta: dict, content: str) -> str:
 def _rel_parts(path: Path) -> tuple[str, str, str]:
     """返回 (relpath posix, category, filename)。"""
     try:
-        rel = path.resolve().relative_to(POSTS_DIR.resolve())
+        rel = path.resolve().relative_to(posts_root().resolve())
     except ValueError:
         return path.name, "", path.name
     rel_posix = rel.as_posix()
@@ -175,14 +182,15 @@ def parse_md_file(path: Path) -> dict | None:
 def _iter_post_paths() -> list[Path]:
     ensure_posts_dir()
     paths: list[Path] = []
-    for path in POSTS_DIR.rglob("*.md"):
+    root = posts_root()
+    for path in root.rglob("*.md"):
         if not path.is_file():
             continue
         if path.name.startswith(".") or path.name.lower() == "readme.md":
             continue
         # 跳过隐藏目录段（如 .git）
         try:
-            rel = path.resolve().relative_to(POSTS_DIR.resolve())
+            rel = path.resolve().relative_to(root.resolve())
         except ValueError:
             continue
         if any(part.startswith(".") for part in rel.parts[:-1]):
@@ -326,7 +334,7 @@ def find_post_path(post_id: str) -> Path | None:
         if post and post["id"] == post_id:
             return path
     # 兼容根目录 id 文件名
-    direct = POSTS_DIR / f"{post_id}.md"
+    direct = posts_root() / f"{post_id}.md"
     if direct.exists():
         return direct
     return None
@@ -342,11 +350,12 @@ def get_post(post_id: str) -> dict | None:
 
 def _category_dir(category: str | None) -> Path:
     cat = sanitize_category(category)
-    target = POSTS_DIR if not cat else POSTS_DIR / Path(*cat.split("/"))
+    root = posts_root()
+    target = root if not cat else root / Path(*cat.split("/"))
     # 防穿越
     resolved = target.resolve()
-    root = POSTS_DIR.resolve()
-    if root not in resolved.parents and resolved != root:
+    root_resolved = root.resolve()
+    if root_resolved not in resolved.parents and resolved != root_resolved:
         raise ValueError("invalid category path")
     return resolved
 
@@ -458,7 +467,7 @@ def update_post(
 
 
 def _cleanup_empty_dirs(folder: Path) -> None:
-    root = POSTS_DIR.resolve()
+    root = posts_root().resolve()
     cur = folder.resolve()
     while cur != root and root in cur.parents:
         try:

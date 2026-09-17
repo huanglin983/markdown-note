@@ -24,6 +24,7 @@
   let dirty = false;
   let saveTimer = null;
   let searchTimer = null;
+  let enhanceTimer = null;
 
   async function ensureAuth() {
     const me = await Moji.api("/api/auth/me");
@@ -38,6 +39,10 @@
       articleDir: (els.category.value || "").trim(),
     });
     els.wordCount.textContent = `${(els.editor.value || "").length} 字`;
+    clearTimeout(enhanceTimer);
+    enhanceTimer = setTimeout(() => {
+      Moji.enhanceMarkdown(els.preview);
+    }, 280);
   }
 
   function markDirty() {

@@ -3,11 +3,13 @@
  *       v1.3.6 修复 marked 已 percent-encode 中文路径后再次 encode 导致双重编码 404
  *       v1.3.7 白天/暗夜主题切换（localStorage: moji-theme）
  *       v1.3.8 主题开关改为太阳/月亮图标
+ *       v1.3.9 Markdown 增强：Mermaid 图渲染 + SQL/Python 等代码高亮
  */
 (() => {
   "use strict";
 
   const THEME_KEY = "moji-theme";
+  let mermaidInitialized = false;
 
   function getTheme() {
     try {
@@ -26,6 +28,24 @@
     });
   }
 
+  function mermaidThemeFor(theme) {
+    return theme === "night" ? "dark" : "default";
+  }
+
+  function ensureMermaid(theme) {
+    if (typeof mermaid === "undefined") return false;
+    const t = theme || getTheme();
+    if (!mermaidInitialized) {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        theme: mermaidThemeFor(t),
+      });
+      mermaidInitialized = true;
+    }
+    return true;
+  }
+
   function applyTheme(theme) {
     const next = theme === "night" ? "night" : "day";
     document.documentElement.setAttribute("data-theme", next);
@@ -35,6 +55,13 @@
       /* ignore quota / private mode */
     }
     syncThemeToggles(next);
+    if (mermaidInitialized && typeof mermaid !== "undefined") {
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        theme: mermaidThemeFor(next),
+      });
+    }
     return next;
   }
 
@@ -151,10 +178,56 @@
     return rewriteMediaUrls(clean, articleDir);
   }
 
+  function isMermaidBlock(codeEl) {
+    return /\blanguage-mermaid\b/i.test(codeEl.className || "");
+  }
+
+  /**
+   * 将 ```mermaid 代码块转为图，并为带 language- 的代码块做高亮（SQL/Python 等）。
+   * 须在 HTML 已插入 DOM 后调用。
+   * @param {ParentNode|null|undefined} root
+   * @returns {Promise<void>}
+   */
+  async function enhanceMarkdown(root) {
+    if (!root || !root.querySelectorAll) return;
+
+    root.querySelectorAll("pre > code").forEach((code) => {
+      if (!isMermaidBlock(code)) return;
+      const pre = code.parentElement;
+      if (!pre) return;
+      const div = document.createElement("div");
+      div.className = "mermaid";
+      div.textContent = code.textContent || "";
+      pre.replaceWith(div);
+    });
+
+    if (typeof hljs !== "undefined") {
+      root.querySelectorAll("pre > code[class*='language-']").forEach((block) => {
+        if (isMermaidBlock(block)) return;
+        if (block.dataset.highlighted === "yes") return;
+        try {
+          hljs.highlightElement(block);
+        } catch {
+          /* 未知语言或解析失败时保留原文 */
+        }
+      });
+    }
+
+    const nodes = root.querySelectorAll(".mermaid:not([data-processed])");
+    if (!nodes.length) return;
+    if (!ensureMermaid()) return;
+    try {
+      await mermaid.run({ nodes });
+    } catch {
+      /* 编辑中语法不完整时忽略 */
+    }
+  }
+
   window.Moji = {
     api,
     formatTime,
     renderMarkdown,
+    enhanceMarkdown,
     joinMediaPath,
     rewriteMediaUrls,
     getTheme,

@@ -40,9 +40,11 @@
         .join("");
       document.getElementById("meta").innerHTML =
         `${post.category ? `<span class="cat-chip">${escapeHtml(post.category)}</span>` : ""}更新于 ${Moji.formatTime(post.updatedAt)} ${tagHtml}`;
-      document.getElementById("content").innerHTML = Moji.renderMarkdown(post.content, {
+      const contentEl = document.getElementById("content");
+      contentEl.innerHTML = Moji.renderMarkdown(post.content, {
         articleDir: post.category || "",
       });
+      await Moji.enhanceMarkdown(contentEl);
       article.hidden = false;
       errorEl.hidden = true;
       await showEditIfAuthed(post.id);

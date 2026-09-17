@@ -25,7 +25,7 @@ from auth import (
     verify_credentials,
     current_user,
 )
-from config import POSTS_DIR, SECRET_KEY, SESSION_COOKIE_NAME, SESSION_HTTPS_ONLY
+from config import SECRET_KEY, SESSION_COOKIE_NAME, SESSION_HTTPS_ONLY, get_posts_dir
 from schemas import (
     AuthMeResponse,
     CategoryNode,
@@ -64,7 +64,7 @@ def _safe_media_file(rel: str) -> Path | None:
     raw = (rel or "").replace("\\", "/").lstrip("/")
     if not raw:
         return None
-    root = store.POSTS_DIR.resolve()
+    root = store.posts_root().resolve()
     # 禁止路径段中的 ..（含 URL 解码后）
     parts = Path(raw).parts
     if any(p == ".." for p in parts):
@@ -137,10 +137,11 @@ def post_page() -> FileResponse:
 
 @app.get("/api/health")
 def health() -> dict:
+    posts = get_posts_dir()
     return {
         "ok": True,
-        "postsDir": str(POSTS_DIR),
-        "postsExists": POSTS_DIR.exists(),
+        "postsDir": str(posts),
+        "postsExists": posts.exists(),
     }
 
 

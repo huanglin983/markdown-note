@@ -94,3 +94,8 @@ SESSION_HTTPS_ONLY = _boot["session_https_only"]
 MAX_CONTENT_BYTES = _boot["max_content_bytes"]
 ADMIN_USER = _boot["admin_user"]
 ADMIN_PASSWORD = _boot["admin_password"]
+
+
+def get_posts_dir() -> Path:
+    """每次从 settings 读取 posts_dir，改配置后无需重启即可生效。"""
+    return load_settings()["posts_dir_path"]

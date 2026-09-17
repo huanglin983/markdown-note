@@ -190,6 +190,8 @@
         <div class="meta">${cur.meta}</div>
         <div class="markdown-body">${cur.html}</div>
       </article>`;
+    const mdBody = floatBody.querySelector(".markdown-body");
+    if (mdBody) Moji.enhanceMarkdown(mdBody);
   }
 
   async function openTab(postId, titleHint) {
